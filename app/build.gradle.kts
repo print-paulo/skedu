@@ -51,6 +51,7 @@ dependencies {
     implementation("androidx.navigation:navigation-ui:2.9.0")
     implementation("androidx.recyclerview:recyclerview:1.4.0")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation("androidx.work:work-runtime:2.10.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)

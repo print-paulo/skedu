@@ -9,4 +9,8 @@
         android:id="@+id/myTasksFragment"
         android:icon="@drawable/ic_tasks"
         android:title="@string/nav_tarefas" />
+    <item
+        android:id="@+id/settingsFragment"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/nav_ajustes" />
 </menu>

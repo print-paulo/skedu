@@ -63,6 +63,12 @@
             app:destination="@id/taskFormFragment" />
     </fragment>
 
+    <!-- Lote 4: ajustes de lembretes (aba da navegação inferior) -->
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.skedu.app.ui.settings.SettingsFragment"
+        tools:layout="@layout/fragment_settings" />
+
     <!-- Criar/editar tarefa (argumentos: groupId e, ao editar, taskId) -->
     <fragment
         android:id="@+id/taskFormFragment"

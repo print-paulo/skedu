@@ -113,6 +113,60 @@
     <string name="tarefa_criada_por">Criada por %1$s</string>
 
     <!-- Anexos -->
+    <!-- Notificações -->
+    <string name="canal_lembretes_nome">Lembretes de entrega</string>
+    <string name="canal_lembretes_desc">Avisos de tarefas perto do prazo ou atrasadas.</string>
+    <string name="canal_novas_nome">Novas tarefas do grupo</string>
+    <string name="canal_novas_desc">Avisa quando alguém do grupo cadastra uma tarefa.</string>
+    <string name="lembrete_entrega">Entrega %1$s</string>
+    <plurals name="lembrete_atrasada">
+        <item quantity="one">Atrasada há %d dia</item>
+        <item quantity="other">Atrasada há %d dias</item>
+    </plurals>
+    <string name="nova_tarefa_titulo">%1$s adicionou uma tarefa</string>
+    <string name="acao_marcar_feita">Marcar como feita</string>
+    <string name="toast_marcada_feita">Marcada como feita</string>
+    <string name="teste_titulo">Aviso de teste</string>
+    <string name="teste_texto">Os avisos do Skedu estão funcionando.</string>
+
+    <!-- Ajustes -->
+    <string name="nav_ajustes">Ajustes</string>
+    <string name="ajustes_titulo">Ajustes</string>
+    <string name="ajustes_secao_lembretes">Lembretes de entrega</string>
+    <string name="ajustes_lembretes_switch">Avisar das entregas</string>
+    <string name="ajustes_lembretes_ajuda">Avisa antes do prazo e continua avisando até você marcar a tarefa como feita.</string>
+    <string name="ajustes_antecedencia">Começar a avisar</string>
+    <plurals name="ajustes_dias_antes">
+        <item quantity="one">%d dia antes</item>
+        <item quantity="other">%d dias antes</item>
+    </plurals>
+    <string name="ajustes_horario">Primeiro aviso do dia</string>
+    <string name="ajustes_hora_formato">às %dh</string>
+    <string name="ajustes_intensidade">Quantos avisos</string>
+    <string name="intensidade_leve">Leve</string>
+    <string name="intensidade_padrao">Padrão</string>
+    <string name="intensidade_intenso">Intenso</string>
+    <string name="intensidade_leve_ajuda">1 aviso no primeiro dia, 1 na véspera, 1 no dia da entrega e 1 por dia se atrasar.</string>
+    <string name="intensidade_padrao_ajuda">1 aviso por dia, 2 na véspera, 3 no dia da entrega e 1 por dia se atrasar.</string>
+    <string name="intensidade_intenso_ajuda">2 avisos por dia, 3 na véspera, 5 no dia da entrega e 2 por dia se atrasar.</string>
+    <string name="ajustes_novas_switch">Avisar quando alguém criar uma tarefa</string>
+    <string name="ajustes_secao_sistema">Notificações e bateria</string>
+    <string name="ajustes_notif_ok">Notificações permitidas.</string>
+    <string name="ajustes_notif_bloqueadas">Notificações bloqueadas: você não vai receber os avisos.</string>
+    <string name="ajustes_notif_permitir">Permitir notificações</string>
+    <string name="ajustes_notif_abrir">Abrir ajustes de notificação</string>
+    <string name="ajustes_bateria_titulo">Para os avisos não atrasarem</string>
+    <string name="ajustes_bateria_texto">Alguns celulares (Xiaomi, Samsung, Motorola…) pausam apps em segundo plano para economizar bateria, e os avisos podem atrasar. Se isso acontecer, deixe o Skedu sem restrição de bateria.</string>
+    <string name="ajustes_bateria_botao">Ajustes de bateria</string>
+    <string name="ajustes_teste">Enviar aviso de teste</string>
+    <string name="ajustes_teste_bloqueado">Permita as notificações para receber o teste.</string>
+
+    <!-- Pedido de permissão de notificação -->
+    <string name="permissao_titulo">Receber avisos de entrega?</string>
+    <string name="permissao_texto">O Skedu avisa quando uma entrega está chegando e quando alguém do grupo cria uma tarefa. Para isso precisa da sua permissão para mostrar notificações.</string>
+    <string name="permissao_permitir">Permitir</string>
+    <string name="permissao_agora_nao">Agora não</string>
+
     <string name="dialog_descartar_titulo">Descartar alterações?</string>
     <string name="dialog_descartar_texto">O que você preencheu e os arquivos enviados não serão salvos na tarefa.</string>
     <string name="dialog_descartar_confirmar">Descartar</string>
