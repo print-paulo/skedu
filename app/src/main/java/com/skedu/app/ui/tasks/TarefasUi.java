@@ -128,6 +128,13 @@ public final class TarefasUi {
         return DATA_HORA.format(ts.toDate().toInstant().atZone(java.time.ZoneId.systemDefault()));
     }
 
+    /** Ex.: "850 KB", "2,3 MB". */
+    public static String formatarTamanho(long bytes) {
+        if (bytes < 1024) return bytes + " B";
+        if (bytes < 1024 * 1024) return Math.round(bytes / 1024.0) + " KB";
+        return String.format(java.util.Locale.forLanguageTag("pt-BR"), "%.1f MB", bytes / (1024.0 * 1024.0));
+    }
+
     /** Ex.: "Entrega 24/09/2026 · em 3 dias". Tarefa já feita mostra só a data. */
     public static String textoPrazo(Context ctx, Task t, boolean feita) {
         String data = ctx.getString(R.string.prazo_data, formatarData(t.dataPrazo()));

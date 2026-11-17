@@ -1,5 +1,8 @@
 package com.skedu.app.ui.tasks;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,11 +10,15 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.google.android.material.color.MaterialColors;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.Timestamp;
@@ -19,11 +26,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.skedu.app.R;
+import com.skedu.app.data.CloudinaryConfig;
+import com.skedu.app.data.CloudinaryUploader;
 import com.skedu.app.data.GroupRepository;
 import com.skedu.app.data.SubjectRepository;
 import com.skedu.app.data.TaskRepository;
 import com.skedu.app.data.UserRepository;
 import com.skedu.app.databinding.FragmentTaskFormBinding;
+import com.skedu.app.databinding.ItemAnexoBinding;
+import com.skedu.app.model.Anexo;
 import com.skedu.app.model.Subject;
 import com.skedu.app.model.Task;
 import com.skedu.app.ui.common.Formularios;
@@ -61,6 +72,31 @@ public class TaskFormFragment extends Fragment {
     private LocalDate prazoEscolhido;
     private Task existente;
 
+    // ---- anexos (Cloudinary) ----
+
+    /** Um anexo na tela: já salvo na tarefa, enviando agora ou com erro. */
+    private static final class ItemAnexo {
+        Anexo anexo;            // preenchido quando o envio termina (ou veio da tarefa)
+        String nome;            // nome provisório enquanto envia
+        int percentual;
+        boolean enviando;
+        String erro;
+        CloudinaryUploader.Envio envio;
+        ItemAnexoBinding linha;
+    }
+
+    private final List<ItemAnexo> itensAnexo = new ArrayList<>();
+
+    /** Há algo preenchido que ainda não foi salvo? (pede confirmação ao sair) */
+    private boolean alterado;
+    /** Carregando/salvando: bloqueia o botão de anexar. */
+    private boolean ocupado;
+
+    // precisa ser registrado antes de o fragment iniciar; por isso fica no campo
+    private final ActivityResultLauncher<String[]> seletorArquivos =
+            registerForActivityResult(new ActivityResultContracts.OpenMultipleDocuments(),
+                    this::aoEscolherArquivos);
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -78,11 +114,27 @@ public class TaskFormFragment extends Fragment {
         binding.tvFormTitulo.setText(editando ? R.string.form_titulo_editar : R.string.form_titulo_nova);
         binding.btnExcluir.setVisibility(editando ? View.VISIBLE : View.GONE);
 
-        binding.btnVoltar.setOnClickListener(v -> voltar());
+        binding.btnVoltar.setOnClickListener(v -> tentarVoltar());
+        // o gesto/botão "voltar" do sistema passa pela mesma confirmação
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        tentarVoltar();
+                    }
+                });
+
+        // qualquer mudança nos campos marca o formulário como "não salvo"
+        Formularios.aoMudar(binding.etTitulo, () -> alterado = true);
+        Formularios.aoMudar(binding.etDescricao, () -> alterado = true);
+        binding.toggleTipo.addOnButtonCheckedListener((g, id, marcado) -> alterado = true);
+        binding.togglePrioridade.addOnButtonCheckedListener((g, id, marcado) -> alterado = true);
         binding.etPrazo.setOnClickListener(v -> abrirCalendario());
         binding.tilPrazo.setEndIconOnClickListener(v -> abrirCalendario());
         binding.btnSalvar.setOnClickListener(v -> salvar());
         binding.btnExcluir.setOnClickListener(v -> confirmarExclusao());
+        binding.btnAddAnexo.setOnClickListener(v -> escolherArquivos());
+        desenharAnexos();
 
         Formularios.limparErroAoDigitar(binding.tilTitulo, binding.etTitulo);
 
@@ -148,6 +200,17 @@ public class TaskFormFragment extends Fragment {
 
     private void preencher(Task t) {
         existente = t;
+
+        itensAnexo.clear();
+        if (t.anexos != null) {
+            for (Anexo a : t.anexos) {
+                ItemAnexo item = new ItemAnexo();
+                item.anexo = a;
+                itensAnexo.add(item);
+            }
+        }
+        desenharAnexos();
+
         binding.etTitulo.setText(t.titulo);
         binding.etDescricao.setText(t.descricao);
         subjectIdEscolhido = t.subjectId == null ? "" : t.subjectId;
@@ -180,12 +243,16 @@ public class TaskFormFragment extends Fragment {
         }
         binding.tvHistorico.setText(historico);
         binding.tvHistorico.setVisibility(View.VISIBLE);
+
+        // preencher os campos dispara os "ouvintes de mudança": o que veio do servidor não conta
+        alterado = false;
     }
 
     private void montarDropdown() {
         binding.etDisciplina.setOnItemClickListener((parent, v, posicao, id) -> {
             // posição 0 = "Sem disciplina"
             subjectIdEscolhido = posicao == 0 ? "" : disciplinas.get(posicao - 1).id;
+            alterado = true;
         });
         atualizarDropdown();
     }
@@ -215,6 +282,7 @@ public class TaskFormFragment extends Fragment {
                 .build();
         seletor.addOnPositiveButtonClickListener(ms -> {
             prazoEscolhido = Instant.ofEpochMilli(ms).atZone(ZoneOffset.UTC).toLocalDate();
+            alterado = true;
             mostrarPrazo();
         });
         seletor.show(getChildFragmentManager(), "prazo");
@@ -260,10 +328,22 @@ public class TaskFormFragment extends Fragment {
             binding.tilPrazo.setError(getString(R.string.erro_prazo));
             return;
         }
+        // não salva com arquivo ainda subindo (senão ele ficaria de fora da tarefa)
+        for (ItemAnexo item : itensAnexo) {
+            if (item.enviando) {
+                Toast.makeText(requireContext(), R.string.anexos_aguarde, Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
 
         Task t = new Task();
+        t.anexos = new ArrayList<>();
+        for (ItemAnexo item : itensAnexo) {
+            if (item.anexo != null) t.anexos.add(item.anexo);
+        }
         t.titulo = titulo;
         t.descricao = Formularios.texto(binding.etDescricao);
         t.prioridade = prioridadeEscolhida();
@@ -336,18 +416,184 @@ public class TaskFormFragment extends Fragment {
     }
 
     private void carregando(boolean sim) {
+        ocupado = sim;
         binding.progress.setVisibility(sim ? View.VISIBLE : View.GONE);
         binding.btnSalvar.setEnabled(!sim);
         binding.btnExcluir.setEnabled(!sim);
+        // enquanto a tarefa carrega não dá para anexar (o carregamento refaria a lista)
+        binding.btnAddAnexo.setEnabled(!sim && contarAtivos() < Task.MAX_ANEXOS);
+    }
+
+    /** Botão/gesto de voltar: pede confirmação se houver algo não salvo. */
+    private void tentarVoltar() {
+        if (!alterado) {
+            voltar();
+            return;
+        }
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.dialog_descartar_titulo)
+                .setMessage(R.string.dialog_descartar_texto)
+                .setNegativeButton(R.string.dialog_continuar_editando, null)
+                .setPositiveButton(R.string.dialog_descartar_confirmar, (d, w) -> voltar())
+                .show();
     }
 
     private void voltar() {
         NavHostFragment.findNavController(this).popBackStack();
     }
 
+    // ------------------------------------------------------------------
+    // Anexos
+    // ------------------------------------------------------------------
+
+    private int contarAtivos() {
+        int n = 0;
+        for (ItemAnexo item : itensAnexo) {
+            if (item.erro == null) n++;
+        }
+        return n;
+    }
+
+    private void escolherArquivos() {
+        if (!CloudinaryConfig.configurado()) {
+            Toast.makeText(requireContext(), R.string.anexos_sem_config, Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (contarAtivos() >= Task.MAX_ANEXOS) {
+            Toast.makeText(requireContext(), R.string.anexos_limite, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        seletorArquivos.launch(new String[]{"*/*"});
+    }
+
+    private void aoEscolherArquivos(List<Uri> uris) {
+        if (binding == null || uris == null || uris.isEmpty()) return;
+
+        for (Uri uri : uris) {
+            if (contarAtivos() >= Task.MAX_ANEXOS) {
+                Toast.makeText(requireContext(), R.string.anexos_limite, Toast.LENGTH_SHORT).show();
+                break;
+            }
+            ItemAnexo item = new ItemAnexo();
+            item.nome = uri.getLastPathSegment();
+            item.enviando = true;
+            itensAnexo.add(item);
+            // tarefa nova ainda não existe: o anexo só vale se salvar (pede confirmação ao sair)
+            if (!editando) alterado = true;
+
+            item.envio = CloudinaryUploader.enviar(requireContext(), uri, new CloudinaryUploader.Ouvinte() {
+                @Override
+                public void aoProgredir(int percentual) {
+                    item.percentual = percentual;
+                    if (binding != null && item.linha != null) mostrarLinha(item);
+                }
+
+                @Override
+                public void aoConcluir(Anexo anexo) {
+                    item.anexo = anexo;
+                    item.enviando = false;
+                    item.envio = null;
+                    if (binding == null) return;
+                    desenharAnexos();
+                    // tarefa que já existe: o arquivo entra nela agora, sem esperar o "Salvar"
+                    if (editando) persistirAnexos();
+                }
+
+                @Override
+                public void aoFalhar(String mensagem) {
+                    item.erro = mensagem;
+                    item.enviando = false;
+                    item.envio = null;
+                    if (binding != null) desenharAnexos();
+                }
+            });
+        }
+        desenharAnexos();
+    }
+
+    /** Refaz a lista de anexos (chamado quando algo entra, sai ou termina de enviar). */
+    private void desenharAnexos() {
+        if (binding == null) return;
+        binding.llAnexos.removeAllViews();
+        for (ItemAnexo item : itensAnexo) {
+            ItemAnexoBinding linha = ItemAnexoBinding.inflate(getLayoutInflater(), binding.llAnexos, false);
+            item.linha = linha;
+            mostrarLinha(item);
+
+            linha.btnRemover.setOnClickListener(v -> {
+                if (item.envio != null) item.envio.cancelar();
+                boolean estavaSalvo = item.anexo != null;
+                itensAnexo.remove(item);
+                desenharAnexos();
+                if (editando && estavaSalvo) persistirAnexos();
+            });
+            linha.getRoot().setOnClickListener(v -> {
+                if (item.anexo != null) abrirAnexo(item.anexo);
+            });
+            binding.llAnexos.addView(linha.getRoot());
+        }
+        binding.tvAnexosTitulo.setText(getString(R.string.anexos_titulo, contarAtivos(), Task.MAX_ANEXOS));
+        binding.btnAddAnexo.setEnabled(!ocupado && contarAtivos() < Task.MAX_ANEXOS);
+    }
+
+    /** Tarefa existente: grava a lista de anexos atual no Firestore. */
+    private void persistirAnexos() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        // existente == null: a tarefa ainda não terminou de carregar
+        if (user == null || !editando || existente == null) return;
+
+        List<Anexo> lista = new ArrayList<>();
+        for (ItemAnexo item : itensAnexo) {
+            if (item.anexo != null) lista.add(item.anexo);
+        }
+        tarefasRepo.atualizarAnexos(groupId, taskId, lista, user.getUid(), UserRepository.nomeDe(user),
+                new GroupRepository.Callback<Void>() {
+                    @Override
+                    public void onSucesso(Void r) {
+                    }
+
+                    @Override
+                    public void onErro(String mensagem) {
+                        if (isAdded()) Toast.makeText(requireContext(), mensagem, Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    private void mostrarLinha(ItemAnexo item) {
+        ItemAnexoBinding l = item.linha;
+        String nome = item.anexo != null ? item.anexo.nome : item.nome;
+        l.tvNome.setText(nome);
+        l.btnRemover.setContentDescription(getString(R.string.anexos_remover, nome));
+
+        if (item.erro != null) {
+            l.tvDetalhe.setText(item.erro);
+            l.tvDetalhe.setTextColor(MaterialColors.getColor(l.getRoot(), androidx.appcompat.R.attr.colorError));
+            l.progress.setVisibility(View.GONE);
+        } else if (item.enviando) {
+            l.tvDetalhe.setText(getString(R.string.anexos_enviando, item.percentual));
+            l.progress.setVisibility(View.VISIBLE);
+            l.progress.setProgressCompat(item.percentual, true);
+        } else {
+            l.tvDetalhe.setText(item.anexo == null ? "" : TarefasUi.formatarTamanho(item.anexo.tamanho));
+            l.progress.setVisibility(View.GONE);
+        }
+    }
+
+    private void abrirAnexo(Anexo anexo) {
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(anexo.url)));
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(requireContext(), R.string.anexos_abrir_erro, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        // sair da tela cancela os envios em andamento
+        for (ItemAnexo item : itensAnexo) {
+            if (item.envio != null) item.envio.cancelar();
+        }
         binding = null;
     }
 }

@@ -138,7 +138,9 @@ service cloud.firestore {
             && d.prazo is timestamp
             && d.subjectId is string && d.subjectId.size() <= 40
             && d.disciplinaNome is string && d.disciplinaNome.size() <= 40
-            && d.disciplinaCor is int;
+            && d.disciplinaCor is int
+            // anexos (Cloudinary): no máximo 10 por tarefa; tarefas antigas não têm o campo
+            && (!('anexos' in d) || (d.anexos is list && d.anexos.size() <= 10));
         }
 
         // editar o conteúdo da tarefa (registra quem editou e quando)
@@ -147,7 +149,7 @@ service cloud.firestore {
           let depois = request.resource.data;
           return depois.diff(antes).affectedKeys().hasOnly([
               'titulo', 'descricao', 'subjectId', 'disciplinaNome', 'disciplinaCor',
-              'prazo', 'prioridade', 'editadoPor', 'editadoPorNome', 'atualizadoEm'])
+              'prazo', 'prioridade', 'anexos', 'editadoPor', 'editadoPorNome', 'atualizadoEm'])
             && depois.editadoPor == request.auth.uid
             && depois.editadoPorNome is string
             && depois.atualizadoEm == request.time

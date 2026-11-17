@@ -22,6 +22,8 @@ public class Task {
     public static final String IMPORTANTE = "importante";
     public static final String NORMAL = "normal";
 
+    public static final int MAX_ANEXOS = 10;
+
     /** Cada pessoa marca a sua como feita (padrão; tarefas antigas, sem o campo, são assim). */
     public static final String TIPO_INDIVIDUAL = "individual";
     /** Uma marcação vale para o grupo inteiro. */
@@ -50,6 +52,9 @@ public class Task {
     public String editadoPorNome;
     public Timestamp atualizadoEm;
 
+    /** Arquivos anexados (Cloudinary), no máximo {@link #MAX_ANEXOS}. Tarefas antigas: nulo. */
+    public List<Anexo> anexos;
+
     /** "individual" ou "grupo". Não muda depois de criada. */
     public String tipo;
 
@@ -73,6 +78,10 @@ public class Task {
 
     public Task() {
         // construtor vazio exigido pelo Firestore
+    }
+
+    public int totalAnexos() {
+        return anexos == null ? 0 : anexos.size();
     }
 
     public boolean ehDoGrupo() {

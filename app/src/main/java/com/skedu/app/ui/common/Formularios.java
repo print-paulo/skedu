@@ -33,6 +33,24 @@ public final class Formularios {
         });
     }
 
+    /** Executa a ação sempre que o texto do campo muda. */
+    public static void aoMudar(TextInputEditText campo, Runnable acao) {
+        campo.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                acao.run();
+            }
+        });
+    }
+
     /** Executa a ação quando o usuário toca em "concluir" no teclado. */
     public static void aoConcluir(TextInputEditText campo, Runnable acao) {
         campo.setOnEditorActionListener((v, actionId, event) -> {

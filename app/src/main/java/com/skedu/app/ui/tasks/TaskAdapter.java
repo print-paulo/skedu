@@ -118,6 +118,15 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.VH> {
             b.tvProgresso.setVisibility(View.GONE);
         }
 
+        // anexos
+        if (t.totalAnexos() > 0) {
+            b.tvAnexos.setVisibility(View.VISIBLE);
+            b.tvAnexos.setText(ctx.getResources().getQuantityString(R.plurals.tarefa_anexos,
+                    t.totalAnexos(), t.totalAnexos()));
+        } else {
+            b.tvAnexos.setVisibility(View.GONE);
+        }
+
         // quem criou / editou por último
         if (t.foiEditada() && t.editadoPorNome != null) {
             b.tvEditado.setText(ctx.getString(R.string.tarefa_editada_por, Nomes.curto(t.editadoPorNome)));
@@ -153,6 +162,7 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.VH> {
                     && a.disciplinaCor == b.disciplinaCor
                     && Objects.equals(a.concluidaPor, b.concluidaPor)
                     && Objects.equals(a.tipo, b.tipo)
+                    && a.totalAnexos() == b.totalAnexos()
                     && a.concluidaGrupo == b.concluidaGrupo
                     && Objects.equals(a.concluidaGrupoPorNome, b.concluidaGrupoPorNome)
                     && Objects.equals(a.atualizadoEm, b.atualizadoEm)

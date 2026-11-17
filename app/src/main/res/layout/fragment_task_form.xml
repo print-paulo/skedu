@@ -203,6 +203,39 @@
                 android:text="@string/prioridade_normal" />
         </com.google.android.material.button.MaterialButtonToggleGroup>
 
+        <!-- Anexos (Cloudinary) -->
+        <TextView
+            android:id="@+id/tv_anexos_titulo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:textAppearance="?attr/textAppearanceTitleSmall"
+            android:textColor="?attr/colorOnSurface"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/anexos_ajuda"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="?attr/colorOnSurfaceVariant" />
+
+        <LinearLayout
+            android:id="@+id/ll_anexos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_add_anexo"
+            style="@style/Widget.Skedu.Button.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/anexos_adicionar"
+            app:icon="@drawable/ic_attach" />
+
         <!-- Quem criou / editou (só ao editar) -->
         <TextView
             android:id="@+id/tv_historico"

@@ -7,6 +7,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.skedu.app.model.Anexo;
 import com.skedu.app.model.Task;
 
 import java.util.ArrayList;
@@ -132,6 +133,24 @@ public class TaskRepository {
     }
 
     /**
+     * Grava só a lista de anexos de uma tarefa existente (usado ao enviar/remover um arquivo,
+     * para não depender de o usuário apertar "Salvar"). Conta como edição: registra quem mexeu.
+     */
+    public void atualizarAnexos(String groupId, String taskId, List<Anexo> anexos, String uid,
+                                String nomeUsuario, GroupRepository.Callback<Void> cb) {
+        Map<String, Object> dados = new HashMap<>();
+        dados.put("anexos", anexosParaMapas(anexos));
+        dados.put("editadoPor", uid);
+        dados.put("editadoPorNome", nomeUsuario);
+        dados.put("atualizadoEm", FieldValue.serverTimestamp());
+
+        tarefas(groupId).document(taskId).update(dados)
+                .addOnSuccessListener(v -> cb.onSucesso(null))
+                .addOnFailureListener(e -> cb.onErro(FirestoreErros.traduzir(e,
+                        "Não foi possível salvar os anexos na tarefa.")));
+    }
+
+    /**
      * Marca/desmarca como feita.
      * - Tarefa individual: só para o usuário (continua pendente para os outros).
      * - Tarefa de grupo: vale para todos; qualquer membro pode marcar ou desmarcar.
@@ -177,7 +196,23 @@ public class TaskRepository {
         m.put("disciplinaCor", t.disciplinaCor);
         m.put("prioridade", t.prioridade);
         m.put("prazo", t.prazo);
+
+        m.put("anexos", anexosParaMapas(t.anexos));
         return m;
+    }
+
+    private static List<Map<String, Object>> anexosParaMapas(List<Anexo> anexos) {
+        List<Map<String, Object>> lista = new ArrayList<>();
+        if (anexos == null) return lista;
+        for (Anexo a : anexos) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("nome", a.nome);
+            item.put("url", a.url);
+            item.put("tipo", a.tipo);
+            item.put("tamanho", a.tamanho);
+            lista.add(item);
+        }
+        return lista;
     }
 
     private static List<Task> converter(String groupId, QuerySnapshot snap) {

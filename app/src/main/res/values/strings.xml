@@ -111,6 +111,25 @@
     <string name="tipo_grupo_ajuda">Quando alguém marca como feita, vale para todo o grupo.</string>
     <string name="tipo_fixo_ajuda">O tipo não pode ser mudado depois que a tarefa é criada.</string>
     <string name="tarefa_criada_por">Criada por %1$s</string>
+
+    <!-- Anexos -->
+    <string name="dialog_descartar_titulo">Descartar alterações?</string>
+    <string name="dialog_descartar_texto">O que você preencheu e os arquivos enviados não serão salvos na tarefa.</string>
+    <string name="dialog_descartar_confirmar">Descartar</string>
+    <string name="dialog_continuar_editando">Continuar editando</string>
+    <string name="anexos_titulo">Anexos (%1$d/%2$d)</string>
+    <string name="anexos_ajuda">Até 10 arquivos de até 10 MB cada. Todos do grupo podem abrir.</string>
+    <string name="anexos_adicionar">Adicionar arquivo</string>
+    <string name="anexos_limite">Limite de 10 anexos por tarefa.</string>
+    <string name="anexos_aguarde">Aguarde o envio dos arquivos terminar.</string>
+    <string name="anexos_enviando">Enviando… %1$d%%</string>
+    <string name="anexos_remover">Remover anexo %1$s</string>
+    <string name="anexos_abrir_erro">Não há app para abrir este arquivo.</string>
+    <string name="anexos_sem_config">Anexos ainda não configurados (Cloudinary).</string>
+    <plurals name="tarefa_anexos">
+        <item quantity="one">%d anexo</item>
+        <item quantity="other">%d anexos</item>
+    </plurals>
     <string name="tarefa_editada_por">Editada por %1$s</string>
 
     <!-- Formulário de tarefa -->
