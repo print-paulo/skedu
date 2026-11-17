@@ -1,0 +1,213 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function logado() {
+      return request.auth != null;
+    }
+
+    // ---------------------------------------------------------------
+    // Perfil do usuário: só o próprio dono lê e escreve
+    // ---------------------------------------------------------------
+    match /users/{uid} {
+      allow read, write: if logado() && request.auth.uid == uid;
+    }
+
+    // ---------------------------------------------------------------
+    // Convites: o código aponta para o grupo.
+    // Dá para buscar um código específico (get), mas não listar todos.
+    // ---------------------------------------------------------------
+    match /invites/{codigo} {
+      allow get: if logado();
+      allow list: if false;
+
+      // só o criador do grupo cria o convite (junto com o grupo, na mesma transação)
+      allow create: if logado()
+        && request.resource.data.keys().hasOnly(['groupId'])
+        && request.resource.data.groupId is string
+        && getAfter(/databases/$(database)/documents/groups/$(request.resource.data.groupId)).data.criadoPor == request.auth.uid
+        && getAfter(/databases/$(database)/documents/groups/$(request.resource.data.groupId)).data.codigoConvite == codigo;
+
+      allow update: if false;
+
+      // LOTE 2: o convite só pode ser apagado junto com o grupo (último membro saindo)
+      allow delete: if logado()
+        && !existsAfter(/databases/$(database)/documents/groups/$(resource.data.groupId));
+    }
+
+    // ---------------------------------------------------------------
+    // Grupos (máx. 12 membros)
+    // ---------------------------------------------------------------
+    match /groups/{groupId} {
+
+      // Entrar: o usuário só pode adicionar a si mesmo, precisa provar que sabe o código
+      // (joinCode) e o grupo não pode passar de 12 membros.
+      function entrandoNoGrupo() {
+        let antes = resource.data;
+        let depois = request.resource.data;
+        return !(request.auth.uid in antes.membros)
+          && depois.diff(antes).affectedKeys().hasOnly(['membros', 'membrosInfo', 'memberCount', 'joinCode'])
+          && depois.joinCode == antes.codigoConvite
+          && depois.membros.size() == antes.membros.size() + 1
+          && depois.membros.hasAll(antes.membros)
+          && request.auth.uid in depois.membros
+          && depois.memberCount == antes.memberCount + 1
+          && depois.memberCount <= 12
+          && depois.membrosInfo.diff(antes.membrosInfo).affectedKeys().hasOnly([request.auth.uid]);
+      }
+
+      // LOTE 2: sair do grupo. O usuário só remove a si mesmo (e há mais alguém no grupo).
+      function saindoDoGrupo() {
+        let antes = resource.data;
+        let depois = request.resource.data;
+        return request.auth.uid in antes.membros
+          && antes.membros.size() > 1
+          && depois.diff(antes).affectedKeys().hasOnly(['membros', 'membrosInfo', 'memberCount'])
+          && !(request.auth.uid in depois.membros)
+          && depois.membros.size() == antes.membros.size() - 1
+          && depois.memberCount == antes.memberCount - 1
+          && depois.membrosInfo.diff(antes.membrosInfo).affectedKeys().hasOnly([request.auth.uid]);
+      }
+
+      // Qualquer membro pode renomear o grupo (foco em praticidade)
+      function renomeandoGrupo() {
+        return request.auth.uid in resource.data.membros
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['nome'])
+          && request.resource.data.nome is string
+          && request.resource.data.nome.size() > 0
+          && request.resource.data.nome.size() <= 60;
+      }
+
+      // só membros leem (a consulta "meus grupos" usa arrayContains do próprio uid)
+      allow read: if logado() && request.auth.uid in resource.data.membros;
+
+      allow create: if logado()
+        && request.resource.data.criadoPor == request.auth.uid
+        && request.resource.data.membros == [request.auth.uid]
+        && request.resource.data.memberCount == 1
+        && request.resource.data.nome is string
+        && request.resource.data.nome.size() > 0
+        && request.resource.data.nome.size() <= 60
+        && request.resource.data.codigoConvite is string
+        && request.resource.data.codigoConvite.size() == 6;
+
+      allow update: if logado() && (entrandoNoGrupo() || saindoDoGrupo() || renomeandoGrupo());
+
+      // LOTE 2: o último membro pode excluir o grupo ao sair
+      allow delete: if logado()
+        && request.auth.uid in resource.data.membros
+        && resource.data.membros.size() == 1;
+
+      // ---------------------------------------------------------------
+      // LOTE 2: disciplinas (qualquer membro cria, edita e apaga)
+      // ---------------------------------------------------------------
+      function souMembro() {
+        return logado()
+          && request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.membros;
+      }
+
+      match /subjects/{subjectId} {
+        function disciplinaValida(d) {
+          return d.nome is string && d.nome.size() > 0 && d.nome.size() <= 40
+            && d.cor is int;
+        }
+
+        allow read: if souMembro();
+
+        allow create: if souMembro()
+          && request.resource.data.keys().hasOnly(['nome', 'cor', 'criadoPor'])
+          && request.resource.data.criadoPor == request.auth.uid
+          && disciplinaValida(request.resource.data);
+
+        allow update: if souMembro()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['nome', 'cor'])
+          && disciplinaValida(request.resource.data);
+
+        allow delete: if souMembro();
+      }
+
+      // ---------------------------------------------------------------
+      // LOTE 2: tarefas (qualquer membro cria, edita e apaga; "concluída" é por pessoa)
+      // ---------------------------------------------------------------
+      match /tasks/{taskId} {
+        function tarefaValida(d) {
+          return d.titulo is string && d.titulo.size() > 0 && d.titulo.size() <= 100
+            && d.descricao is string && d.descricao.size() <= 1000
+            && d.prioridade in ['urgente', 'importante', 'normal']
+            && d.prazo is timestamp
+            && d.subjectId is string && d.subjectId.size() <= 40
+            && d.disciplinaNome is string && d.disciplinaNome.size() <= 40
+            && d.disciplinaCor is int;
+        }
+
+        // editar o conteúdo da tarefa (registra quem editou e quando)
+        function editandoTarefa() {
+          let antes = resource.data;
+          let depois = request.resource.data;
+          return depois.diff(antes).affectedKeys().hasOnly([
+              'titulo', 'descricao', 'subjectId', 'disciplinaNome', 'disciplinaCor',
+              'prazo', 'prioridade', 'editadoPor', 'editadoPorNome', 'atualizadoEm'])
+            && depois.editadoPor == request.auth.uid
+            && depois.editadoPorNome is string
+            && depois.atualizadoEm == request.time
+            && tarefaValida(depois);
+        }
+
+        // ao renomear/apagar uma disciplina, as tarefas dela são atualizadas
+        function ajustandoDisciplina() {
+          let antes = resource.data;
+          let depois = request.resource.data;
+          return depois.diff(antes).affectedKeys().hasOnly(['subjectId', 'disciplinaNome', 'disciplinaCor'])
+            && tarefaValida(depois);
+        }
+
+        // tarefa de GRUPO: uma marcação vale para todos; qualquer membro marca ou desmarca.
+        // Ao marcar, registra quem marcou e quando.
+        function alternandoConclusaoGrupo() {
+          let antes = resource.data;
+          let depois = request.resource.data;
+          return antes.get('tipo', 'individual') == 'grupo'
+            && depois.diff(antes).affectedKeys().hasOnly([
+                'concluidaGrupo', 'concluidaGrupoPor', 'concluidaGrupoPorNome', 'concluidaGrupoEm'])
+            && depois.concluidaGrupo is bool
+            && (depois.concluidaGrupo == false
+                || (depois.concluidaGrupoPor == request.auth.uid
+                    && depois.concluidaGrupoPorNome is string
+                    && depois.concluidaGrupoEm == request.time));
+        }
+
+        // tarefa INDIVIDUAL: marcar/desmarcar como feita; cada um mexe só no próprio uid da lista
+        function alternandoConclusao() {
+          let antes = resource.data;
+          let depois = request.resource.data;
+          return antes.get('tipo', 'individual') == 'individual'
+            && depois.diff(antes).affectedKeys().hasOnly(['concluidaPor'])
+            && depois.concluidaPor is list
+            && depois.concluidaPor.toSet().difference(antes.concluidaPor.toSet()).hasOnly([request.auth.uid])
+            && antes.concluidaPor.toSet().difference(depois.concluidaPor.toSet()).hasOnly([request.auth.uid]);
+        }
+
+        allow read: if souMembro();
+
+        allow create: if souMembro()
+          && request.resource.data.criadoPor == request.auth.uid
+          && request.resource.data.criadoPorNome is string
+          && request.resource.data.editadoPor == request.auth.uid
+          && request.resource.data.criadoEm == request.time
+          && request.resource.data.atualizadoEm == request.time
+          && request.resource.data.concluidaPor == []
+          && request.resource.data.tipo in ['individual', 'grupo']
+          && request.resource.data.concluidaGrupo == false
+          && tarefaValida(request.resource.data);
+
+        // o tipo nunca aparece nas listas de campos editáveis: não muda depois de criada
+        allow update: if souMembro()
+          && (editandoTarefa() || ajustandoDisciplina() || alternandoConclusao()
+              || alternandoConclusaoGrupo());
+
+        allow delete: if souMembro();
+      }
+    }
+  }
+}

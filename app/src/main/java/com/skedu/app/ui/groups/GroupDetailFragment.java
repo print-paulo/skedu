@@ -1,10 +1,5 @@
 package com.skedu.app.ui.groups;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,33 +11,28 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.WriterException;
-import com.journeyapps.barcodescanner.BarcodeEncoder;
+import com.skedu.app.R;
 import com.skedu.app.data.GroupRepository;
 import com.skedu.app.databinding.FragmentGroupDetailBinding;
 import com.skedu.app.model.Group;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import com.skedu.app.ui.subjects.SubjectsTabFragment;
+import com.skedu.app.ui.tasks.TasksTabFragment;
 
 /**
- * Tela do grupo: nome, membros e convite (código + QR).
- * Nos próximos lotes entram aqui as abas de Tarefas e Disciplinas.
+ * Tela do grupo: título + abas (Tarefas, Disciplinas, Membros).
+ * Cada aba é um fragment filho que recebe o id do grupo.
  */
 public class GroupDetailFragment extends Fragment {
 
     public static final String ARG_GROUP_ID = "groupId";
+    private static final String ESTADO_ABA = "aba";
 
     private FragmentGroupDetailBinding binding;
     private GroupRepository repo;
     private ListenerRegistration listener;
     private String groupId;
-    private Group grupoAtual;
-    private String codigoDoQrDesenhado;
 
     @Nullable
     @Override
@@ -58,20 +48,80 @@ public class GroupDetailFragment extends Fragment {
         groupId = requireArguments().getString(ARG_GROUP_ID);
 
         binding.btnVoltar.setOnClickListener(v -> NavHostFragment.findNavController(this).popBackStack());
-        binding.btnCompartilhar.setOnClickListener(v -> compartilhar());
-        binding.tvCodigo.setOnClickListener(v -> copiarCodigo());
+
+        binding.tabs.addTab(binding.tabs.newTab().setText(R.string.tab_tarefas));
+        binding.tabs.addTab(binding.tabs.newTab().setText(R.string.tab_disciplinas));
+        binding.tabs.addTab(binding.tabs.newTab().setText(R.string.tab_membros));
+        binding.tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                mostrarAba(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
+
+        int aba = savedInstanceState == null ? 0 : savedInstanceState.getInt(ESTADO_ABA, 0);
+        TabLayout.Tab inicial = binding.tabs.getTabAt(aba);
+        if (inicial != null) inicial.select();
+        // a aba 0 já vem selecionada por padrão e o listener não dispara: monta na mão
+        if (aba == 0) mostrarAba(0);
     }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (binding != null) outState.putInt(ESTADO_ABA, binding.tabs.getSelectedTabPosition());
+    }
+
+    private void mostrarAba(int posicao) {
+        if (!isAdded() || groupId == null) return;
+        Fragment aba;
+        switch (posicao) {
+            case 1:
+                aba = SubjectsTabFragment.nova(groupId);
+                break;
+            case 2:
+                aba = MembersTabFragment.nova(groupId);
+                break;
+            default:
+                aba = TasksTabFragment.nova(groupId);
+        }
+        getChildFragmentManager().beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.tab_container, aba)
+                .commit();
+    }
+
+    // ------------------------------------------------------------------
+    // Nome do grupo no título
+    // ------------------------------------------------------------------
 
     @Override
     public void onStart() {
         super.onStart();
-        if (groupId == null) return;
+        observar();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        pararDeObservar();
+    }
+
+    private void observar() {
+        if (groupId == null || listener != null) return;
         listener = repo.observarGrupo(groupId, new GroupRepository.Callback<Group>() {
             @Override
             public void onSucesso(Group grupo) {
                 if (binding == null) return;
-                grupoAtual = grupo;
-                mostrar(grupo);
+                binding.tvNome.setText(grupo.nome);
             }
 
             @Override
@@ -82,67 +132,22 @@ public class GroupDetailFragment extends Fragment {
         });
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
+    /** Chamado pela aba Membros antes de sair do grupo (evita erro de permissão depois). */
+    public void pararDeObservar() {
         if (listener != null) {
             listener.remove();
             listener = null;
         }
     }
 
-    private void mostrar(Group g) {
-        binding.tvNome.setText(g.nome);
-        binding.tvMembrosTitulo.setText("Membros (" + g.memberCount + "/" + GroupRepository.MAX_MEMBROS + ")");
-
-        // lista de nomes, ordenada; marca o criador
-        List<String> linhas = new ArrayList<>();
-        if (g.membrosInfo != null) {
-            for (Map.Entry<String, String> e : g.membrosInfo.entrySet()) {
-                String nome = e.getValue() == null ? "Sem nome" : e.getValue();
-                boolean criador = e.getKey().equals(g.criadoPor);
-                linhas.add("• " + nome + (criador ? " (criador)" : ""));
-            }
-        }
-        Collections.sort(linhas, String.CASE_INSENSITIVE_ORDER);
-        binding.tvMembros.setText(String.join("\n", linhas));
-
-        binding.tvCodigo.setText(g.codigoConvite);
-        desenharQr(g.codigoConvite);
-    }
-
-    private void desenharQr(String codigo) {
-        if (codigo == null || codigo.equals(codigoDoQrDesenhado)) return;
-        try {
-            Bitmap bmp = new BarcodeEncoder().encodeBitmap(
-                    GroupRepository.QR_PREFIXO + codigo, BarcodeFormat.QR_CODE, 600, 600);
-            binding.ivQr.setImageBitmap(bmp);
-            codigoDoQrDesenhado = codigo;
-        } catch (WriterException e) {
-            Toast.makeText(requireContext(), "Não foi possível gerar o QR Code.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void compartilhar() {
-        if (grupoAtual == null) return;
-        Intent envio = new Intent(Intent.ACTION_SEND);
-        envio.setType("text/plain");
-        envio.putExtra(Intent.EXTRA_TEXT, "Entre no meu grupo \"" + grupoAtual.nome
-                + "\" no Skedu! Código de convite: " + grupoAtual.codigoConvite);
-        startActivity(Intent.createChooser(envio, "Compartilhar convite"));
-    }
-
-    private void copiarCodigo() {
-        if (grupoAtual == null || grupoAtual.codigoConvite == null) return;
-        ClipboardManager cm = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
-        cm.setPrimaryClip(ClipData.newPlainText("Código do grupo", grupoAtual.codigoConvite));
-        Toast.makeText(requireContext(), "Código copiado!", Toast.LENGTH_SHORT).show();
+    /** Chamado pela aba Membros se a saída falhar. */
+    public void voltarAObservar() {
+        observar();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-        codigoDoQrDesenhado = null;
     }
 }

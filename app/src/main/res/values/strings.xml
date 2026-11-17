@@ -53,4 +53,121 @@
     <string name="scanner_prompt">Aponte a câmera para o QR Code do convite</string>
     <string name="erro_nome_grupo">Informe o nome do grupo</string>
     <string name="erro_codigo">Informe o código de convite</string>
+
+    <!-- Navegação inferior -->
+    <string name="nav_grupos">Grupos</string>
+    <string name="nav_tarefas">Tarefas</string>
+
+    <!-- Abas do grupo -->
+    <string name="tab_tarefas">Tarefas</string>
+    <string name="tab_disciplinas">Disciplinas</string>
+    <string name="tab_membros">Membros</string>
+
+    <!-- Filtros -->
+    <string name="filtro_pendentes">Pendentes</string>
+    <string name="filtro_urgentes">Urgentes</string>
+    <string name="filtro_feitas">Feitas</string>
+    <string name="filtro_todas">Todas</string>
+
+    <!-- Lista de tarefas -->
+    <string name="tarefas_nova">Nova tarefa</string>
+    <string name="tarefas_vazio_pendentes_titulo">Nada pendente</string>
+    <string name="tarefas_vazio_pendentes_texto">Quando alguém do grupo cadastrar uma entrega, ela aparece aqui.</string>
+    <string name="tarefas_vazio_urgentes_titulo">Nada urgente</string>
+    <string name="tarefas_vazio_urgentes_texto">Nenhuma tarefa urgente ou vencendo nos próximos 3 dias.</string>
+    <string name="tarefas_vazio_feitas_titulo">Nenhuma tarefa feita ainda</string>
+    <string name="tarefas_vazio_feitas_texto">Marque uma tarefa como feita e ela aparece aqui.</string>
+    <string name="tarefas_vazio_todas_titulo">Nenhuma tarefa ainda</string>
+    <string name="tarefas_vazio_todas_texto">Toque em Nova tarefa para cadastrar a primeira entrega do grupo.</string>
+    <string name="minhas_titulo">Minhas tarefas</string>
+    <string name="minhas_sem_grupo_titulo">Você ainda não está em um grupo</string>
+    <string name="minhas_sem_grupo_texto">Entre em um grupo para ver as tarefas aqui.</string>
+
+    <!-- Cartão de tarefa -->
+    <string name="tarefa_marcar_feita">Marcar \"%1$s\" como feita</string>
+    <string name="tarefa_grupo">Grupo: %1$s</string>
+    <string name="prioridade_urgente">Urgente</string>
+    <string name="prioridade_importante">Importante</string>
+    <string name="prioridade_normal">Normal</string>
+    <string name="prazo_data">Entrega %1$s</string>
+    <string name="prazo_completo">%1$s · %2$s</string>
+    <string name="prazo_hoje">hoje</string>
+    <string name="prazo_amanha">amanhã</string>
+    <plurals name="prazo_em_dias">
+        <item quantity="one">em %d dia</item>
+        <item quantity="other">em %d dias</item>
+    </plurals>
+    <plurals name="prazo_atrasada_dias">
+        <item quantity="one">atrasada há %d dia</item>
+        <item quantity="other">atrasada há %d dias</item>
+    </plurals>
+    <string name="tarefa_progresso">%1$d de %2$d já fizeram</string>
+    <string name="tarefa_grupo_vale_para_todos">Em grupo · vale para todos</string>
+    <string name="tarefa_grupo_feita_por">Em grupo · feita por %1$s</string>
+    <string name="label_tipo">Tipo de tarefa</string>
+    <string name="tipo_individual">Individual</string>
+    <string name="tipo_grupo">Em grupo</string>
+    <string name="tipo_individual_ajuda">Cada pessoa marca a sua como feita.</string>
+    <string name="tipo_grupo_ajuda">Quando alguém marca como feita, vale para todo o grupo.</string>
+    <string name="tipo_fixo_ajuda">O tipo não pode ser mudado depois que a tarefa é criada.</string>
+    <string name="tarefa_criada_por">Criada por %1$s</string>
+    <string name="tarefa_editada_por">Editada por %1$s</string>
+
+    <!-- Formulário de tarefa -->
+    <string name="form_titulo_nova">Nova tarefa</string>
+    <string name="form_titulo_editar">Editar tarefa</string>
+    <string name="campo_titulo">Título</string>
+    <string name="campo_descricao">Descrição (opcional)</string>
+    <string name="campo_disciplina">Disciplina</string>
+    <string name="disciplina_nenhuma">Sem disciplina</string>
+    <string name="disciplina_ajuda">Crie disciplinas na aba Disciplinas do grupo</string>
+    <string name="campo_prazo">Data de entrega</string>
+    <string name="datepicker_titulo">Data de entrega</string>
+    <string name="prazo_escolher_data">Escolher data</string>
+    <string name="label_prioridade">Prioridade</string>
+    <string name="form_salvar">Salvar tarefa</string>
+    <string name="form_excluir">Excluir tarefa</string>
+    <string name="erro_titulo">Informe o título</string>
+    <string name="erro_prazo">Escolha a data de entrega</string>
+    <string name="tarefa_salva">Tarefa salva</string>
+    <string name="tarefa_excluida">Tarefa excluída</string>
+    <string name="historico_criada">Criada por %1$s em %2$s</string>
+    <string name="historico_editada">Editada por %1$s em %2$s</string>
+    <string name="dialog_excluir_tarefa_titulo">Excluir tarefa?</string>
+    <string name="dialog_excluir_tarefa_texto">A tarefa some para todo o grupo. Essa ação não pode ser desfeita.</string>
+    <string name="dialog_excluir">Excluir</string>
+    <string name="dialog_salvar">Salvar</string>
+
+    <!-- Disciplinas -->
+    <string name="disciplinas_nova">Nova disciplina</string>
+    <string name="disciplinas_vazio_titulo">Nenhuma disciplina</string>
+    <string name="disciplinas_vazio_texto">Crie as matérias do grupo para organizar as tarefas.</string>
+    <string name="dialog_disciplina_nova">Nova disciplina</string>
+    <string name="dialog_disciplina_editar">Editar disciplina</string>
+    <string name="campo_nome_disciplina">Nome da disciplina</string>
+    <string name="label_cor">Cor</string>
+    <string name="erro_nome_disciplina">Informe o nome da disciplina</string>
+    <string name="dialog_excluir_disciplina_titulo">Excluir disciplina?</string>
+    <string name="dialog_excluir_disciplina_texto">As tarefas dela continuam no grupo, mas ficam sem disciplina.</string>
+    <string name="disciplina_salva">Disciplina salva</string>
+    <string name="disciplina_excluida">Disciplina excluída</string>
+    <string name="cor_desc">Cor %1$s</string>
+    <string name="cor_desc_selecionada">Cor %1$s, selecionada</string>
+    <string name="cor_verde_azulado">verde-azulado</string>
+    <string name="cor_azul">azul</string>
+    <string name="cor_roxo">roxo</string>
+    <string name="cor_rosa">rosa</string>
+    <string name="cor_laranja">laranja</string>
+    <string name="cor_ambar">âmbar</string>
+    <string name="cor_vermelho">vermelho</string>
+    <string name="cor_verde">verde</string>
+    <string name="cor_cinza">cinza</string>
+
+    <!-- Membros / sair do grupo -->
+    <string name="membros_sair">Sair do grupo</string>
+    <string name="dialog_sair_titulo">Sair do grupo?</string>
+    <string name="dialog_sair_texto">Você deixa de ver as tarefas de %1$s. Para voltar, vai precisar de um novo convite.</string>
+    <string name="dialog_sair_texto_unico">Você é o único membro. Ao sair, o grupo e o código de convite serão excluídos.</string>
+    <string name="dialog_sair_confirmar">Sair</string>
+    <string name="grupo_saiu">Você saiu do grupo</string>
 </resources>

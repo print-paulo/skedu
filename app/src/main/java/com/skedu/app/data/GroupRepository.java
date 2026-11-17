@@ -7,6 +7,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.WriteBatch;
 import com.skedu.app.model.Group;
 
 import java.security.SecureRandom;
@@ -186,6 +187,36 @@ public class GroupRepository {
                                             + MAX_MEMBROS + " membros).")));
                 })
                 .addOnFailureListener(e -> cb.onErro(traduzir(e, "Não foi possível verificar o código.")));
+    }
+
+    // ------------------------------------------------------------------
+    // Sair do grupo
+    // ------------------------------------------------------------------
+
+    /**
+     * Remove o usuário do grupo. Se ele era o último membro, o grupo e o convite são excluídos
+     * (as tarefas e disciplinas ficam inacessíveis, pois ninguém mais pode lê-las).
+     */
+    public void sair(Group grupo, String uid, Callback<Void> cb) {
+        if (grupo.memberCount <= 1) {
+            WriteBatch lote = db.batch();
+            lote.delete(db.collection("groups").document(grupo.id));
+            if (grupo.codigoConvite != null) {
+                lote.delete(db.collection("invites").document(grupo.codigoConvite));
+            }
+            lote.commit()
+                    .addOnSuccessListener(v -> cb.onSucesso(null))
+                    .addOnFailureListener(e -> cb.onErro(traduzir(e, "Não foi possível sair do grupo.")));
+            return;
+        }
+
+        Map<String, Object> up = new HashMap<>();
+        up.put("membros", FieldValue.arrayRemove(uid));
+        up.put("membrosInfo." + uid, FieldValue.delete());
+        up.put("memberCount", FieldValue.increment(-1));
+        db.collection("groups").document(grupo.id).update(up)
+                .addOnSuccessListener(v -> cb.onSucesso(null))
+                .addOnFailureListener(e -> cb.onErro(traduzir(e, "Não foi possível sair do grupo.")));
     }
 
     /** Aceita "abc123", " ABC123 " ou "SKEDU:ABC123". Devolve null se inválido. */

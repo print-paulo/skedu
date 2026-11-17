@@ -47,5 +47,25 @@
     <fragment
         android:id="@+id/groupDetailFragment"
         android:name="com.skedu.app.ui.groups.GroupDetailFragment"
-        tools:layout="@layout/fragment_group_detail" />
+        tools:layout="@layout/fragment_group_detail">
+        <action
+            android:id="@+id/action_detail_to_task_form"
+            app:destination="@id/taskFormFragment" />
+    </fragment>
+
+    <!-- Lote 2: tarefas de todos os grupos do usuário (aba da navegação inferior) -->
+    <fragment
+        android:id="@+id/myTasksFragment"
+        android:name="com.skedu.app.ui.tasks.MyTasksFragment"
+        tools:layout="@layout/fragment_my_tasks">
+        <action
+            android:id="@+id/action_mytasks_to_task_form"
+            app:destination="@id/taskFormFragment" />
+    </fragment>
+
+    <!-- Criar/editar tarefa (argumentos: groupId e, ao editar, taskId) -->
+    <fragment
+        android:id="@+id/taskFormFragment"
+        android:name="com.skedu.app.ui.tasks.TaskFormFragment"
+        tools:layout="@layout/fragment_task_form" />
 </navigation>
