@@ -20,22 +20,12 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                app:cardBackgroundColor="?attr/colorPrimary"
-                app:cardCornerRadius="14dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="0dp">
-
-                <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_gravity="center"
-                    android:importantForAccessibility="no"
-                    android:src="@drawable/ic_skedu_mark"
-                    app:tint="?attr/colorOnPrimary" />
-            </com.google.android.material.card.MaterialCardView>
+            <!-- o logo completo (decorativo: o nome "Skedu" ao lado já diz o que é) -->
+            <ImageView
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_logo_mark" />
 
             <TextView
                 android:layout_width="wrap_content"

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Skedu: versão de uma cor do ícone (ícones temáticos do Android 13+). O sistema usa só a
+  transparência e pinta com a cor do papel de parede; por isso a página vira contorno,
+  com a faixa do topo, as argolas e o check preenchidos.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:pivotX="54"
+        android:pivotY="54"
+        android:scaleX="0.88"
+        android:scaleY="0.88">
+        <!-- contorno da página -->
+        <path
+            android:pathData="M39,32.5H69A7.5,7.5 0 0 1 76.5,40V70A7.5,7.5 0 0 1 69,77.5H39A7.5,7.5 0 0 1 31.5,70V40A7.5,7.5 0 0 1 39,32.5Z"
+            android:strokeColor="#FF000000"
+            android:strokeWidth="5" />
+        <!-- faixa do topo -->
+        <path
+            android:fillColor="#FF000000"
+            android:pathData="M29,40A10,10 0 0 1 39,30H69A10,10 0 0 1 79,40V48H29Z" />
+        <!-- argolas -->
+        <path
+            android:fillColor="#FF000000"
+            android:pathData="M43,23A3,3 0 0 1 46,26V35A3,3 0 0 1 40,35V26A3,3 0 0 1 43,23Z" />
+        <path
+            android:fillColor="#FF000000"
+            android:pathData="M65,23A3,3 0 0 1 68,26V35A3,3 0 0 1 62,35V26A3,3 0 0 1 65,23Z" />
+        <!-- check -->
+        <path
+            android:pathData="M41,63L50,72L67,53"
+            android:strokeColor="#FF000000"
+            android:strokeWidth="7"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+    </group>
+</vector>
