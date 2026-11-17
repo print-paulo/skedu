@@ -50,6 +50,7 @@
     <string name="dialog_entrar_ajuda">6 caracteres</string>
     <string name="dialog_entrar_confirmar">Entrar</string>
     <string name="dialog_escanear">Escanear QR</string>
+    <string name="scanner_prompt">Aponte a câmera para o QR Code do convite</string>
     <string name="erro_nome_grupo">Informe o nome do grupo</string>
     <string name="erro_codigo">Informe o código de convite</string>
 </resources>

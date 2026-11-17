@@ -9,6 +9,11 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <!-- Leitor de QR (sobrescreve as cores da biblioteca zxing) -->
+    <color name="zxing_viewfinder_laser">#FB923C</color>
+    <color name="zxing_viewfinder_mask">#B30B1F1E</color>
+    <color name="zxing_possible_result_points">#C05EEAD4</color>
+
     <!-- Primária (teal) -->
     <color name="skedu_primary">#0F766E</color>
     <color name="skedu_on_primary">#FFFFFF</color>

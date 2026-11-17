@@ -207,8 +207,9 @@ public class GroupsFragment extends Fragment {
     private void abrirLeitorQr() {
         ScanOptions op = new ScanOptions();
         op.setDesiredBarcodeFormats(ScanOptions.QR_CODE);
-        op.setPrompt("Aponte para o QR Code do convite");
+        op.setPrompt(getString(R.string.scanner_prompt));
         op.setBeepEnabled(false);
+        // a orientação (retrato) é definida no AndroidManifest.xml
         op.setOrientationLocked(false);
         leitorQr.launch(op);
     }
