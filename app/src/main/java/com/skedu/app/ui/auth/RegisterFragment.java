@@ -15,11 +15,14 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.skedu.app.R;
 import com.skedu.app.data.UserRepository;
 import com.skedu.app.databinding.FragmentRegisterBinding;
+import com.skedu.app.ui.common.Formularios;
 
 public class RegisterFragment extends Fragment {
 
@@ -40,6 +43,12 @@ public class RegisterFragment extends Fragment {
         binding.btnCriar.setOnClickListener(v -> criarConta());
         binding.btnVoltar.setOnClickListener(v ->
                 NavHostFragment.findNavController(this).popBackStack());
+
+        Formularios.limparErroAoDigitar(binding.tilNome, binding.etNome);
+        Formularios.limparErroAoDigitar(binding.tilEmail, binding.etEmail);
+        Formularios.limparErroAoDigitar(binding.tilSenha, binding.etSenha);
+        Formularios.limparErroAoDigitar(binding.tilConfirmar, binding.etConfirmar);
+        Formularios.aoConcluir(binding.etConfirmar, this::criarConta);
     }
 
     private void criarConta() {
@@ -75,8 +84,15 @@ public class RegisterFragment extends Fragment {
             if (!task.isSuccessful()) {
                 if (!isAdded() || binding == null) return;
                 carregando(false);
-                Toast.makeText(requireContext(), AuthErros.traduzir(task.getException()),
-                        Toast.LENGTH_LONG).show();
+                Exception erro = task.getException();
+                String mensagem = AuthErros.traduzir(erro);
+                if (erro instanceof FirebaseAuthUserCollisionException) {
+                    binding.tilEmail.setError(mensagem);
+                } else if (erro instanceof FirebaseAuthWeakPasswordException) {
+                    binding.tilSenha.setError(mensagem);
+                } else {
+                    Toast.makeText(requireContext(), mensagem, Toast.LENGTH_LONG).show();
+                }
                 return;
             }
 
@@ -110,7 +126,7 @@ public class RegisterFragment extends Fragment {
     }
 
     private static String texto(TextInputEditText campo) {
-        return campo.getText() == null ? "" : campo.getText().toString().trim();
+        return Formularios.texto(campo);
     }
 
     @Override

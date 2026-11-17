@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Paleta do Skedu (modo escuro). Tons mais claros e dessaturados, não cores invertidas.
+  Mesmos nomes de values/colors.xml.
+-->
+<resources>
+    <!-- Primária -->
+    <color name="skedu_primary">#5EEAD4</color>
+    <color name="skedu_on_primary">#042F2E</color>
+    <color name="skedu_primary_container">#115E59</color>
+    <color name="skedu_on_primary_container">#CCFBF1</color>
+
+    <!-- Secundária -->
+    <color name="skedu_secondary">#7FD1C7</color>
+    <color name="skedu_on_secondary">#06302C</color>
+    <color name="skedu_secondary_container">#1B4743</color>
+    <color name="skedu_on_secondary_container">#D5EEEA</color>
+
+    <!-- Terciária (laranja) -->
+    <color name="skedu_tertiary">#FB923C</color>
+    <color name="skedu_on_tertiary">#431407</color>
+    <color name="skedu_tertiary_container">#7C2D12</color>
+    <color name="skedu_on_tertiary_container">#FFEDD5</color>
+
+    <!-- Fundo e superfícies -->
+    <color name="skedu_background">#0B1F1E</color>
+    <color name="skedu_on_background">#E6F4F1</color>
+    <color name="skedu_surface">#0F2625</color>
+    <color name="skedu_on_surface">#E6F4F1</color>
+    <color name="skedu_surface_variant">#1E3A38</color>
+    <color name="skedu_on_surface_variant">#A7C4C0</color>
+    <color name="skedu_surface_container_low">#122B29</color>
+    <color name="skedu_surface_container">#163331</color>
+    <color name="skedu_surface_container_high">#1C3D3A</color>
+    <color name="skedu_outline">#7FA39E</color>
+    <color name="skedu_outline_variant">#2A4A47</color>
+
+    <!-- Erro -->
+    <color name="skedu_error">#F87171</color>
+    <color name="skedu_on_error">#450A0A</color>
+    <color name="skedu_error_container">#7F1D1D</color>
+    <color name="skedu_on_error_container">#FEE2E2</color>
+
+    <!-- Prioridades de tarefa -->
+    <color name="skedu_priority_urgent">#FCA5A5</color>
+    <color name="skedu_priority_urgent_container">#7F1D1D</color>
+    <color name="skedu_priority_important">#FCD34D</color>
+    <color name="skedu_priority_important_container">#78350F</color>
+    <color name="skedu_priority_normal">#5EEAD4</color>
+    <color name="skedu_priority_normal_container">#115E59</color>
+</resources>

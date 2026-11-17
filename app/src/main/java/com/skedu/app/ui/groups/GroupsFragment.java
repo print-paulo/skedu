@@ -6,13 +6,12 @@ import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -27,8 +26,10 @@ import com.journeyapps.barcodescanner.ScanOptions;
 import com.skedu.app.R;
 import com.skedu.app.data.GroupRepository;
 import com.skedu.app.data.UserRepository;
+import com.skedu.app.databinding.DialogCampoBinding;
 import com.skedu.app.databinding.FragmentGroupsBinding;
 import com.skedu.app.model.Group;
+import com.skedu.app.ui.common.Formularios;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,15 +113,35 @@ public class GroupsFragment extends Fragment {
     // ------------------------------------------------------------------
 
     private void mostrarDialogCriar() {
-        EditText campo = novoCampo("Nome do grupo (ex.: ADS 2º sem)");
-        campo.setFilters(new InputFilter[]{new InputFilter.LengthFilter(60)});
+        DialogCampoBinding campo = DialogCampoBinding.inflate(getLayoutInflater());
+        campo.tilCampo.setHint(R.string.dialog_criar_hint);
+        campo.tilCampo.setHelperText(getString(R.string.dialog_criar_ajuda));
+        campo.etCampo.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+        campo.etCampo.setFilters(new InputFilter[]{new InputFilter.LengthFilter(60)});
+        Formularios.limparErroAoDigitar(campo.tilCampo, campo.etCampo);
 
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Criar grupo")
-                .setView(comPadding(campo))
-                .setPositiveButton("Criar", (d, w) -> criarGrupo(campo.getText().toString().trim()))
-                .setNegativeButton("Cancelar", null)
-                .show();
+        AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.dialog_criar_titulo)
+                .setView(campo.getRoot())
+                .setPositiveButton(R.string.dialog_criar_confirmar, null)
+                .setNegativeButton(R.string.dialog_cancelar, null)
+                .create();
+
+        // listener próprio no botão para o diálogo não fechar quando o campo está vazio
+        dialog.setOnShowListener(d -> {
+            View confirmar = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            confirmar.setOnClickListener(v -> {
+                String nome = Formularios.texto(campo.etCampo);
+                if (nome.isEmpty()) {
+                    campo.tilCampo.setError(getString(R.string.erro_nome_grupo));
+                    return;
+                }
+                dialog.dismiss();
+                criarGrupo(nome);
+            });
+            Formularios.aoConcluir(campo.etCampo, confirmar::performClick);
+        });
+        dialog.show();
     }
 
     private void criarGrupo(String nome) {
@@ -151,18 +172,36 @@ public class GroupsFragment extends Fragment {
     // ------------------------------------------------------------------
 
     private void mostrarDialogEntrar() {
-        EditText campo = novoCampo("Código de convite (6 caracteres)");
-        campo.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
+        DialogCampoBinding campo = DialogCampoBinding.inflate(getLayoutInflater());
+        campo.tilCampo.setHint(R.string.dialog_entrar_hint);
+        campo.tilCampo.setHelperText(getString(R.string.dialog_entrar_ajuda));
+        campo.etCampo.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
                 | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-        campo.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(20)});
+        campo.etCampo.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(20)});
+        Formularios.limparErroAoDigitar(campo.tilCampo, campo.etCampo);
 
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Entrar em um grupo")
-                .setView(comPadding(campo))
-                .setPositiveButton("Entrar", (d, w) -> entrarComCodigo(campo.getText().toString()))
-                .setNeutralButton("Escanear QR", (d, w) -> abrirLeitorQr())
-                .setNegativeButton("Cancelar", null)
-                .show();
+        AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.dialog_entrar_titulo)
+                .setView(campo.getRoot())
+                .setPositiveButton(R.string.dialog_entrar_confirmar, null)
+                .setNeutralButton(R.string.dialog_escanear, (d, w) -> abrirLeitorQr())
+                .setNegativeButton(R.string.dialog_cancelar, null)
+                .create();
+
+        dialog.setOnShowListener(d -> {
+            View confirmar = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            confirmar.setOnClickListener(v -> {
+                String codigo = Formularios.texto(campo.etCampo);
+                if (codigo.isEmpty()) {
+                    campo.tilCampo.setError(getString(R.string.erro_codigo));
+                    return;
+                }
+                dialog.dismiss();
+                entrarComCodigo(codigo);
+            });
+            Formularios.aoConcluir(campo.etCampo, confirmar::performClick);
+        });
+        dialog.show();
     }
 
     private void abrirLeitorQr() {
@@ -227,21 +266,6 @@ public class GroupsFragment extends Fragment {
             listener.remove();
             listener = null;
         }
-    }
-
-    private EditText novoCampo(String dica) {
-        EditText campo = new EditText(requireContext());
-        campo.setHint(dica);
-        campo.setSingleLine(true);
-        return campo;
-    }
-
-    private FrameLayout comPadding(View filho) {
-        int px = (int) (24 * getResources().getDisplayMetrics().density);
-        FrameLayout caixa = new FrameLayout(requireContext());
-        caixa.setPadding(px, px / 2, px, 0);
-        caixa.addView(filho);
-        return caixa;
     }
 
     @Override

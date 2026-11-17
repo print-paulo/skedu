@@ -1,8 +1,57 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+    <!--
+      Tema único do Skedu. As cores vêm de @color/skedu_* e mudam sozinhas no modo escuro
+      (values-night/colors.xml), por isso não existe values-night/themes.xml.
+    -->
     <style name="Base.Theme.Skedu" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- Primária -->
+        <item name="colorPrimary">@color/skedu_primary</item>
+        <item name="colorOnPrimary">@color/skedu_on_primary</item>
+        <item name="colorPrimaryContainer">@color/skedu_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/skedu_on_primary_container</item>
+
+        <!-- Secundária -->
+        <item name="colorSecondary">@color/skedu_secondary</item>
+        <item name="colorOnSecondary">@color/skedu_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/skedu_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/skedu_on_secondary_container</item>
+
+        <!-- Terciária (laranja) -->
+        <item name="colorTertiary">@color/skedu_tertiary</item>
+        <item name="colorOnTertiary">@color/skedu_on_tertiary</item>
+        <item name="colorTertiaryContainer">@color/skedu_tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/skedu_on_tertiary_container</item>
+
+        <!-- Fundo e superfícies -->
+        <item name="android:colorBackground">@color/skedu_background</item>
+        <item name="colorOnBackground">@color/skedu_on_background</item>
+        <item name="colorSurface">@color/skedu_surface</item>
+        <item name="colorOnSurface">@color/skedu_on_surface</item>
+        <item name="colorSurfaceVariant">@color/skedu_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/skedu_on_surface_variant</item>
+        <item name="colorSurfaceContainerLow">@color/skedu_surface_container_low</item>
+        <item name="colorSurfaceContainer">@color/skedu_surface_container</item>
+        <item name="colorSurfaceContainerHigh">@color/skedu_surface_container_high</item>
+        <item name="colorOutline">@color/skedu_outline</item>
+        <item name="colorOutlineVariant">@color/skedu_outline_variant</item>
+
+        <!-- Erro -->
+        <item name="colorError">@color/skedu_error</item>
+        <item name="colorOnError">@color/skedu_on_error</item>
+        <item name="colorErrorContainer">@color/skedu_error_container</item>
+        <item name="colorOnErrorContainer">@color/skedu_on_error_container</item>
+
+        <!-- Botões e campos padrão (ver styles.xml) -->
+        <item name="materialButtonStyle">@style/Widget.Skedu.Button</item>
+        <item name="textInputStyle">@style/Widget.Skedu.TextInputLayout</item>
+
+        <!-- Fonte do app -->
+        <item name="android:fontFamily">@font/plus_jakarta_sans</item>
+        <item name="fontFamily">@font/plus_jakarta_sans</item>
+
+        <!-- Barras do sistema acompanham o fundo -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
     <style name="Theme.Skedu" parent="Base.Theme.Skedu" />

@@ -1,5 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Paleta do Skedu (modo claro). Teal = identidade, laranja = ação/urgência.
+  Os mesmos nomes são redefinidos em values-night/colors.xml para o modo escuro,
+  então o tema (themes.xml) é único e só referencia estes tokens.
+  Pares texto/fundo conferidos para contraste >= 4.5:1.
+-->
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Primária (teal) -->
+    <color name="skedu_primary">#0F766E</color>
+    <color name="skedu_on_primary">#FFFFFF</color>
+    <color name="skedu_primary_container">#CCFBF1</color>
+    <color name="skedu_on_primary_container">#042F2E</color>
+
+    <!-- Secundária (teal escuro, para elementos de apoio) -->
+    <color name="skedu_secondary">#115E59</color>
+    <color name="skedu_on_secondary">#FFFFFF</color>
+    <color name="skedu_secondary_container">#D5EEEA</color>
+    <color name="skedu_on_secondary_container">#0B3B37</color>
+
+    <!-- Terciária (laranja: ações principais e urgência) -->
+    <color name="skedu_tertiary">#C2410C</color>
+    <color name="skedu_on_tertiary">#FFFFFF</color>
+    <color name="skedu_tertiary_container">#FFEDD5</color>
+    <color name="skedu_on_tertiary_container">#431407</color>
+
+    <!-- Fundo e superfícies -->
+    <color name="skedu_background">#F0FDFA</color>
+    <color name="skedu_on_background">#134E4A</color>
+    <color name="skedu_surface">#FFFFFF</color>
+    <color name="skedu_on_surface">#134E4A</color>
+    <color name="skedu_surface_variant">#E8F1F4</color>
+    <color name="skedu_on_surface_variant">#475569</color>
+    <color name="skedu_surface_container_low">#F7FEFC</color>
+    <color name="skedu_surface_container">#EAF7F4</color>
+    <color name="skedu_surface_container_high">#DFF1EE</color>
+    <color name="skedu_outline">#64748B</color>
+    <color name="skedu_outline_variant">#B7E4DC</color>
+
+    <!-- Erro -->
+    <color name="skedu_error">#DC2626</color>
+    <color name="skedu_on_error">#FFFFFF</color>
+    <color name="skedu_error_container">#FEE2E2</color>
+    <color name="skedu_on_error_container">#7F1D1D</color>
+
+    <!-- Prioridades de tarefa (sempre usar junto com ícone/texto, nunca só a cor) -->
+    <color name="skedu_priority_urgent">#B91C1C</color>
+    <color name="skedu_priority_urgent_container">#FEE2E2</color>
+    <color name="skedu_priority_important">#B45309</color>
+    <color name="skedu_priority_important_container">#FEF3C7</color>
+    <color name="skedu_priority_normal">#0F766E</color>
+    <color name="skedu_priority_normal_container">#CCFBF1</color>
 </resources>

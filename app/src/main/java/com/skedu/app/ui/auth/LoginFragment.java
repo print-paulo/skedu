@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.skedu.app.R;
 import com.skedu.app.data.UserRepository;
 import com.skedu.app.databinding.FragmentLoginBinding;
+import com.skedu.app.ui.common.Formularios;
 
 public class LoginFragment extends Fragment {
 
@@ -41,6 +42,10 @@ public class LoginFragment extends Fragment {
         binding.btnEsqueciSenha.setOnClickListener(v -> recuperarSenha());
         binding.btnCriarConta.setOnClickListener(v ->
                 NavHostFragment.findNavController(this).navigate(R.id.action_login_to_register));
+
+        Formularios.limparErroAoDigitar(binding.tilEmail, binding.etEmail);
+        Formularios.limparErroAoDigitar(binding.tilSenha, binding.etSenha);
+        Formularios.aoConcluir(binding.etSenha, this::entrarComEmail);
     }
 
     @Override
@@ -79,8 +84,8 @@ public class LoginFragment extends Fragment {
             if (task.isSuccessful()) {
                 irParaGrupos();
             } else {
-                Toast.makeText(requireContext(), AuthErros.traduzir(task.getException()),
-                        Toast.LENGTH_LONG).show();
+                // erro junto do campo, não em um aviso que some
+                binding.tilSenha.setError(AuthErros.traduzir(task.getException()));
             }
         });
     }
@@ -138,7 +143,7 @@ public class LoginFragment extends Fragment {
     }
 
     private static String texto(com.google.android.material.textfield.TextInputEditText campo) {
-        return campo.getText() == null ? "" : campo.getText().toString().trim();
+        return Formularios.texto(campo);
     }
 
     @Override

@@ -43,10 +43,16 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.VH> {
     public void onBindViewHolder(@NonNull VH holder, int position) {
         Group g = itens.get(position);
         holder.b.tvNome.setText(g.nome);
+        holder.b.tvInicial.setText(inicial(g.nome));
         holder.b.tvInfo.setText(g.memberCount + "/" + GroupRepository.MAX_MEMBROS
                 + (g.memberCount == 1 ? " membro" : " membros")
                 + " · código " + g.codigoConvite);
         holder.b.getRoot().setOnClickListener(v -> aoClicar.aoClicar(g));
+    }
+
+    private static String inicial(String nome) {
+        if (nome == null || nome.trim().isEmpty()) return "?";
+        return nome.trim().substring(0, 1).toUpperCase();
     }
 
     @Override

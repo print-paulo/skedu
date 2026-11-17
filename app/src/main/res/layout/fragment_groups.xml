@@ -1,77 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:orientation="vertical">
 
+    <!-- Cabeçalho -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingStart="24dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="12dp">
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Meus grupos"
-            android:textAppearance="?attr/textAppearanceHeadlineMedium"
-            android:textStyle="bold" />
+            android:accessibilityHeading="true"
+            android:text="@string/grupos_titulo"
+            android:textAppearance="@style/TextAppearance.Skedu.Title" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_sair"
-            style="@style/Widget.Material3.Button.TextButton"
+            style="@style/Widget.Skedu.Button.Text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sair" />
+            android:text="@string/grupos_sair" />
     </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
         android:layout_weight="1">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_grupos"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clipToPadding="false" />
+            android:clipToPadding="false"
+            android:paddingHorizontal="24dp"
+            android:paddingVertical="12dp" />
 
-        <TextView
+        <!-- Estado vazio -->
+        <LinearLayout
             android:id="@+id/tv_vazio"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:gravity="center"
-            android:padding="24dp"
-            android:text="Você ainda não está em nenhum grupo.\nCrie um ou entre com um código de convite."
-            android:textAppearance="?attr/textAppearanceBodyLarge"
-            android:visibility="gone" />
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingHorizontal="32dp"
+            android:visibility="gone">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="88dp"
+                android:layout_height="88dp"
+                app:cardBackgroundColor="?attr/colorPrimaryContainer"
+                app:cardCornerRadius="44dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_group"
+                    app:tint="?attr/colorOnPrimaryContainer" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:gravity="center"
+                android:text="@string/grupos_vazio_titulo"
+                android:textAppearance="?attr/textAppearanceTitleLarge"
+                android:textColor="?attr/colorOnSurface"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="@string/grupos_vazio_texto"
+                android:textAppearance="@style/TextAppearance.Skedu.Subtitle" />
+        </LinearLayout>
     </FrameLayout>
 
+    <!-- Ações -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_criar"
-            android:layout_width="0dp"
+            style="@style/Widget.Skedu.Button.Accent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
-            android:layout_weight="1"
-            android:text="Criar grupo" />
+            android:text="@string/grupos_criar" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_entrar_codigo"
-            style="@style/Widget.Material3.Button.TonalButton"
-            android:layout_width="0dp"
+            style="@style/Widget.Skedu.Button.Tonal"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_weight="1"
-            android:text="Entrar com código" />
+            android:layout_marginTop="8dp"
+            android:text="@string/grupos_entrar_codigo" />
     </LinearLayout>
 </LinearLayout>
