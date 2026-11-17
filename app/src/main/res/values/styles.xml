@@ -27,6 +27,16 @@
         <item name="cornerRadius">14dp</item>
     </style>
 
+    <!-- Chip de filtro com contorno suave (o padrão do Material é escuro e pesado) -->
+    <style name="Widget.Skedu.Chip.Filter" parent="Widget.Material3.Chip.Filter">
+        <item name="chipStrokeColor">?attr/colorOutlineVariant</item>
+        <item name="android:textAppearance">@style/TextAppearance.Skedu.Chip</item>
+    </style>
+
+    <style name="TextAppearance.Skedu.Chip" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <!-- Botão de destaque (laranja): a ação principal da tela, no máximo um por tela -->
     <style name="Widget.Skedu.Button.Accent" parent="Widget.Skedu.Button">
         <item name="backgroundTint">?attr/colorTertiary</item>

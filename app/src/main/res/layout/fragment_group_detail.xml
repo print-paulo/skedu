@@ -5,26 +5,38 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_voltar"
-        style="@style/Widget.Skedu.Button.Text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/detalhe_voltar"
-        app:icon="@drawable/ic_arrow_back" />
-
-    <TextView
-        android:id="@+id/tv_nome"
+    <!-- Voltar e nome do grupo na mesma linha (economiza altura para a lista) -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:accessibilityHeading="true"
-        android:ellipsize="end"
-        android:maxLines="2"
-        android:paddingHorizontal="24dp"
-        android:paddingTop="4dp"
-        android:textAppearance="@style/TextAppearance.Skedu.Title" />
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="24dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_voltar"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="@string/detalhe_voltar"
+            app:icon="@drawable/ic_arrow_back"
+            app:iconTint="?attr/colorOnSurface" />
+
+        <TextView
+            android:id="@+id/tv_nome"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:accessibilityHeading="true"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textAppearance="?attr/textAppearanceHeadlineSmall"
+            android:textColor="?attr/colorOnSurface"
+            android:textStyle="bold" />
+    </LinearLayout>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabs"

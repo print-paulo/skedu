@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Cartão de tarefa. Esquerda: bloco da data (cor = urgência). Meio: o que e onde.
+  Direita: concluir. Detalhes secundários ficam discretos no rodapé.
+-->
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/Widget.Skedu.Card"
@@ -12,23 +16,47 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingVertical="8dp"
-        android:paddingStart="4dp"
-        android:paddingEnd="16dp">
+        android:paddingStart="16dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="4dp"
+        android:paddingBottom="16dp">
 
-        <!-- Concluir é individual: marca só para quem tocou -->
-        <com.google.android.material.checkbox.MaterialCheckBox
-            android:id="@+id/cb_concluida"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="48dp"
-            android:minHeight="48dp" />
+        <!-- Data da entrega: o dado que o aluno procura primeiro -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_data"
+            android:layout_width="56dp"
+            android:layout_height="64dp"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:importantForAccessibility="no"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_dia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_mes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="-2dp"
+                    android:textAppearance="?attr/textAppearanceLabelLarge" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginStart="14dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -52,7 +80,17 @@
                 android:textColor="?attr/colorOnSurface"
                 android:textStyle="bold" />
 
+            <TextView
+                android:id="@+id/tv_prazo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textStyle="bold" />
+
+            <!-- Prioridade (só quando não é "normal") e disciplina -->
             <LinearLayout
+                android:id="@+id/ll_meta"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -63,6 +101,7 @@
                     android:id="@+id/tv_prioridade"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="12dp"
                     android:background="@drawable/bg_pill"
                     android:paddingHorizontal="8dp"
                     android:paddingVertical="2dp"
@@ -73,7 +112,6 @@
                     android:id="@+id/v_cor"
                     android:layout_width="10dp"
                     android:layout_height="10dp"
-                    android:layout_marginStart="12dp"
                     android:background="@drawable/bg_dot" />
 
                 <TextView
@@ -89,40 +127,52 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/tv_prazo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textStyle="bold" />
-
-            <TextView
                 android:id="@+id/tv_progresso"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="8dp"
                 android:textAppearance="?attr/textAppearanceBodySmall"
                 android:textColor="?attr/colorOnSurfaceVariant" />
 
-            <TextView
-                android:id="@+id/tv_anexos"
+            <!-- Rodapé discreto: anexos e quem criou/editou -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:drawablePadding="4dp"
-                android:drawableStart="@drawable/ic_attach"
-                android:drawableTint="?attr/colorOnSurfaceVariant"
+                android:layout_marginTop="2dp"
                 android:gravity="center_vertical"
-                android:textAppearance="?attr/textAppearanceBodySmall"
-                android:textColor="?attr/colorOnSurfaceVariant"
-                android:visibility="gone" />
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tv_editado"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceBodySmall"
-                android:textColor="?attr/colorOnSurfaceVariant" />
+                <TextView
+                    android:id="@+id/tv_anexos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="12dp"
+                    android:drawablePadding="4dp"
+                    android:drawableStart="@drawable/ic_attach_small"
+                    android:drawableTint="?attr/colorOnSurfaceVariant"
+                    android:gravity="center_vertical"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tv_editado"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
+            </LinearLayout>
         </LinearLayout>
+
+        <!-- Concluir é individual (ou do grupo, nas tarefas em grupo) -->
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/cb_concluida"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="48dp"
+            android:minHeight="48dp" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

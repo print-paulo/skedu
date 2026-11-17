@@ -1,42 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:orientation="vertical">
 
+    <!-- Cabeçalho fixo: voltar, título e (ao editar) excluir, longe do botão principal -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingHorizontal="24dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
         android:paddingTop="8dp"
-        android:paddingBottom="24dp">
+        android:paddingEnd="12dp">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_voltar"
-            style="@style/Widget.Skedu.Button.Text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="-12dp"
-            android:text="@string/detalhe_voltar"
-            app:icon="@drawable/ic_arrow_back" />
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="@string/detalhe_voltar"
+            app:icon="@drawable/ic_arrow_back"
+            app:iconTint="?attr/colorOnSurface" />
 
         <TextView
             android:id="@+id/tv_form_titulo"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
             android:accessibilityHeading="true"
-            android:textAppearance="@style/TextAppearance.Skedu.Title" />
+            android:textAppearance="?attr/textAppearanceHeadlineSmall"
+            android:textColor="?attr/colorOnSurface"
+            android:textStyle="bold" />
 
-        <com.google.android.material.progressindicator.LinearProgressIndicator
-            android:id="@+id/progress"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_excluir"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="@string/form_excluir"
+            android:visibility="gone"
+            app:icon="@drawable/ic_delete"
+            app:iconTint="?attr/colorError" />
+    </LinearLayout>
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone" />
+
+    <!-- Só o formulário rola; a barra de salvar fica sempre à vista -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:indeterminate="true"
-            android:visibility="gone" />
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingBottom="24dp">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_titulo"
@@ -246,22 +275,22 @@
             android:textColor="?attr/colorOnSurfaceVariant"
             android:visibility="gone" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_salvar"
-            style="@style/Widget.Skedu.Button.Accent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="@string/form_salvar" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_excluir"
-            style="@style/Widget.Skedu.Button.Text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/form_excluir"
-            android:textColor="?attr/colorError"
-            android:visibility="gone" />
-    </LinearLayout>
-</ScrollView>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Barra fixa com a ação principal -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?attr/colorOutlineVariant" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_salvar"
+        style="@style/Widget.Skedu.Button.Accent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginVertical="12dp"
+        android:text="@string/form_salvar" />
+</LinearLayout>

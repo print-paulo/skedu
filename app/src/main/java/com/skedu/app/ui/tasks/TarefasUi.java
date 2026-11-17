@@ -128,6 +128,42 @@ public final class TarefasUi {
         return DATA_HORA.format(ts.toDate().toInstant().atZone(java.time.ZoneId.systemDefault()));
     }
 
+    private static final java.util.Locale PT_BR = java.util.Locale.forLanguageTag("pt-BR");
+
+    /** Mês abreviado em minúsculas e sem ponto: "nov", "set". */
+    public static String mesCurto(LocalDate d) {
+        return d.getMonth().getDisplayName(java.time.format.TextStyle.SHORT, PT_BR)
+                .replace(".", "").toLowerCase(PT_BR);
+    }
+
+    /** Dia da semana abreviado: "qui", "sex". */
+    public static String diaSemanaCurto(LocalDate d) {
+        return d.getDayOfWeek().getDisplayName(java.time.format.TextStyle.SHORT, PT_BR)
+                .replace(".", "").toLowerCase(PT_BR);
+    }
+
+    /**
+     * Prazo em palavras para o cartão (a data em si fica no bloco à esquerda):
+     * "Hoje", "Amanhã", "Em 3 dias (qui)", "Em 12 dias", "Atrasada há 2 dias", "Feita".
+     */
+    public static String textoRelativo(Context ctx, Task t, boolean feita) {
+        if (feita) return ctx.getString(R.string.tarefa_feita);
+        LocalDate d = t.dataPrazo();
+        if (d == null) return "";
+
+        long dias = diasAte(t);
+        if (dias < 0) {
+            int atraso = (int) -dias;
+            return ctx.getResources().getQuantityString(R.plurals.lembrete_atrasada, atraso, atraso);
+        }
+        if (dias == 0) return ctx.getString(R.string.relativo_hoje);
+        if (dias == 1) return ctx.getString(R.string.relativo_amanha);
+
+        String emDias = ctx.getResources().getQuantityString(R.plurals.relativo_em_dias, (int) dias, (int) dias);
+        // dentro da semana o dia da semana ajuda mais do que a contagem sozinha
+        return dias <= 6 ? ctx.getString(R.string.relativo_com_dia, emDias, diaSemanaCurto(d)) : emDias;
+    }
+
     /** Ex.: "850 KB", "2,3 MB". */
     public static String formatarTamanho(long bytes) {
         if (bytes < 1024) return bytes + " B";

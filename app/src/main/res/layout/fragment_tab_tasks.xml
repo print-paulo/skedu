@@ -27,7 +27,7 @@
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip_pendentes"
-                    style="@style/Widget.Material3.Chip.Filter"
+                    style="@style/Widget.Skedu.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
@@ -35,14 +35,14 @@
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip_urgentes"
-                    style="@style/Widget.Material3.Chip.Filter"
+                    style="@style/Widget.Skedu.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/filtro_urgentes" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip_feitas"
-                    style="@style/Widget.Material3.Chip.Filter"
+                    style="@style/Widget.Skedu.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/filtro_feitas" />

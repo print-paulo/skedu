@@ -102,8 +102,25 @@
         <item quantity="other">atrasada há %d dias</item>
     </plurals>
     <string name="tarefa_progresso">%1$d de %2$d já fizeram</string>
-    <string name="tarefa_grupo_vale_para_todos">Em grupo · vale para todos</string>
-    <string name="tarefa_grupo_feita_por">Em grupo · feita por %1$s</string>
+    <string name="tarefa_grupo_vale_para_todos">Tarefa em grupo</string>
+    <string name="tarefa_grupo_feita_por">Feita por %1$s</string>
+    <string name="tarefa_feita">Feita</string>
+
+    <!-- Prazo relativo no cartão (a data fica no bloco à esquerda) -->
+    <string name="relativo_hoje">Hoje</string>
+    <string name="relativo_amanha">Amanhã</string>
+    <plurals name="relativo_em_dias">
+        <item quantity="one">Em %d dia</item>
+        <item quantity="other">Em %d dias</item>
+    </plurals>
+    <string name="relativo_com_dia">%1$s (%2$s)</string>
+
+    <!-- Seções da lista de tarefas pendentes -->
+    <string name="secao_atrasadas">Atrasadas</string>
+    <string name="secao_hoje">Hoje</string>
+    <string name="secao_amanha">Amanhã</string>
+    <string name="secao_semana">Esta semana</string>
+    <string name="secao_depois">Mais adiante</string>
     <string name="label_tipo">Tipo de tarefa</string>
     <string name="tipo_individual">Individual</string>
     <string name="tipo_grupo">Em grupo</string>

@@ -171,7 +171,8 @@ public class MyTasksFragment extends Fragment {
         }
 
         List<Task> lista = TarefasUi.filtrar(todas, filtro, uid);
-        adapter.submitList(lista);
+        // pendentes/urgentes agrupam por tempo; "feitas" é lista simples
+        adapter.submitTarefas(lista, filtro != TarefasUi.Filtro.FEITAS);
 
         if (!temGrupos) {
             binding.vazio.getRoot().setVisibility(View.VISIBLE);

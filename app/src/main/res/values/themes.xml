@@ -22,8 +22,9 @@
         <item name="colorTertiaryContainer">@color/skedu_tertiary_container</item>
         <item name="colorOnTertiaryContainer">@color/skedu_on_tertiary_container</item>
 
-        <!-- Fundo e superfícies -->
+        <!-- Fundo e superfícies (windowBackground evita faixas brancas sob as barras do sistema) -->
         <item name="android:colorBackground">@color/skedu_background</item>
+        <item name="android:windowBackground">@color/skedu_background</item>
         <item name="colorOnBackground">@color/skedu_on_background</item>
         <item name="colorSurface">@color/skedu_surface</item>
         <item name="colorOnSurface">@color/skedu_on_surface</item>

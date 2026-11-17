@@ -14,14 +14,13 @@
         android:layout_weight="1"
         app:defaultNavHost="true" />
 
-    <!-- Só aparece nas telas principais (Grupos e Tarefas); o espaço das barras do sistema
-         é reservado pela MainActivity na raiz. -->
+    <!-- Só aparece nas telas principais. Ela mesma cobre a área da barra de gestos
+         (por isso a MainActivity não reserva o espaço de baixo quando ela está visível). -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"
         app:labelVisibilityMode="labeled"
-        app:menu="@menu/menu_bottom_nav"
-        app:paddingBottomSystemWindowInsets="false" />
+        app:menu="@menu/menu_bottom_nav" />
 </LinearLayout>

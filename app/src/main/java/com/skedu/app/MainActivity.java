@@ -3,6 +3,7 @@ package com.skedu.app;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -13,7 +14,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.NavGraph;
 import androidx.navigation.NavOptions;
@@ -47,12 +50,25 @@ public class MainActivity extends AppCompatActivity {
 
         // respeita barra de status, de navegação e teclado
         View raiz = findViewById(R.id.raiz);
+        View barraInferior = findViewById(R.id.bottom_nav);
         ViewCompat.setOnApplyWindowInsetsListener(raiz, (v, insets) -> {
-            Insets barras = insets.getInsets(
-                    WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.ime());
-            v.setPadding(barras.left, barras.top, barras.right, barras.bottom);
+            Insets sistema = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            Insets teclado = insets.getInsets(WindowInsetsCompat.Type.ime());
+            // embaixo: teclado, se aberto; senão a barra de gestos — a não ser que a navegação
+            // inferior esteja visível, pois ela mesma já cobre essa área
+            int embaixo = teclado.bottom > 0 ? teclado.bottom
+                    : (barraInferior.getVisibility() == View.VISIBLE ? 0 : sistema.bottom);
+            v.setPadding(sistema.left, sistema.top, sistema.right, embaixo);
             return insets;
         });
+
+        // ícones da barra de status/navegação escuros no tema claro (e claros no escuro);
+        // sem isto, com a tela de ponta a ponta, o relógio some sobre o fundo claro
+        boolean noite = (getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+        WindowInsetsControllerCompat controle = WindowCompat.getInsetsController(getWindow(), raiz);
+        controle.setAppearanceLightStatusBars(!noite);
+        controle.setAppearanceLightNavigationBars(!noite);
 
         // tela inicial depende de o usuário já estar logado
         NavHostFragment navHost = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host);
@@ -135,6 +151,8 @@ public class MainActivity extends AppCompatActivity {
             int id = destino.getId();
             boolean principal = ehTelaPrincipal(id);
             barra.setVisibility(principal ? View.VISIBLE : View.GONE);
+            // a reserva de espaço embaixo depende de a barra estar visível: recalcula
+            ViewCompat.requestApplyInsets(findViewById(R.id.raiz));
             if (principal && barra.getSelectedItemId() != id) {
                 barra.getMenu().findItem(id).setChecked(true);
             }
