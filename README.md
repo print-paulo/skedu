@@ -14,8 +14,6 @@ Projeto da disciplina de Desenvolvimento de Aplicativos Móveis (Unicid).
 - Lembretes de entrega e aviso de nova tarefa, configuráveis em Ajustes.
 - Modo claro e escuro.
 
-Material detalhado para apresentação: [`docs/apresentacao-skedu.md`](docs/apresentacao-skedu.md).
-
 ## Tecnologias
 
 Java, Android (minSdk 26), Material 3, Navigation Component, ViewBinding, WorkManager, Firebase Authentication, Cloud Firestore, Cloudinary e ZXing.
