@@ -14,3 +14,14 @@
 .cxx
 local.properties
 .claude/
+
+# Configurações da IDE (têm caminhos e IDs do projeto da pessoa que usa)
+.idea/
+
+# Segredos e dados do projeto Firebase: nunca vão para o git (veja o README)
+app/google-services.json
+google-services.json
+*.jks
+*.keystore
+.env
+.env.*
